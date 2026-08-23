@@ -62,7 +62,6 @@ jobs:
       - name: Compile turboacc
         working-directory: sdk
         run: |
-          make package/luci-apps/luci-app-turboacc/clean
           make package/luci-apps/luci-app-turboacc/compile V=s
 
       - name: Upload APK
