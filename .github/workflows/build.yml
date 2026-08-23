@@ -20,6 +20,7 @@ jobs:
             unzip \
             wget \
             python3
+            zstd
 
       - name: Download ImmortalWrt SDK
         run: |
@@ -28,7 +29,9 @@ jobs:
           tar --use-compress-program=unzstd \
             -xf immortalwrt-sdk-25.12.1-qualcommax-ipq60xx_gcc-14.3.0_musl.Linux-x86_64.tar.zst
 
-          mv immortalwrt-sdk-* sdk
+          SDK_DIR=$(find . -maxdepth 1 -type d -name "immortalwrt-sdk-*")
+
+          mv "$SDK_DIR" sdk
 
       - name: Prepare feeds
         working-directory: sdk
