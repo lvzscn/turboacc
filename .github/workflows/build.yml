@@ -1,0 +1,69 @@
+name: Build luci-app-turboacc APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout turboacc
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            build-essential \
+            rsync \
+            unzip \
+            wget \
+            python3
+
+      - name: Download ImmortalWrt SDK
+        run: |
+          wget https://downloads.immortalwrt.org/releases/25.12.1/targets/qualcommax/ipq60xx/immortalwrt-sdk-25.12.1-qualcommax-ipq60xx_gcc-14.3.0_musl.Linux-x86_64.tar.zst
+
+          tar --use-compress-program=unzstd \
+            -xf immortalwrt-sdk-25.12.1-qualcommax-ipq60xx_gcc-14.3.0_musl.Linux-x86_64.tar.zst
+
+          mv immortalwrt-sdk-* sdk
+
+      - name: Prepare feeds
+        working-directory: sdk
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Copy turboacc package
+        run: |
+          mkdir -p sdk/package/luci-apps
+
+          cp -r custom/luci-app-turboacc \
+          sdk/package/luci-apps/
+
+      - name: Configure package
+        working-directory: sdk
+        run: |
+          echo 'CONFIG_PACKAGE_luci-app-turboacc=m' >> .config
+          echo 'CONFIG_PACKAGE_TURBOACC_INCLUDE_FLOW_OFFLOADING=y' >> .config
+          echo 'CONFIG_PACKAGE_TURBOACC_INCLUDE_FULLCONE=y' >> .config
+          echo 'CONFIG_PACKAGE_TURBOACC_INCLUDE_BBR_CCA=y' >> .config
+
+          echo 'CONFIG_PACKAGE_TURBOACC_INCLUDE_FAST_CLASSIFIER=n' >> .config
+          echo 'CONFIG_PACKAGE_TURBOACC_INCLUDE_SHORTCUT_FE_CM=n' >> .config
+
+          make defconfig
+
+      - name: Compile turboacc
+        working-directory: sdk
+        run: |
+          make package/luci-apps/luci-app-turboacc/compile V=s
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: turboacc-apk
+          path: |
+            sdk/bin/packages/**/luci-app-turboacc*.apk
