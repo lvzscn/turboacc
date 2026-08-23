@@ -6,6 +6,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-turboacc
+PKG_VERSION:=2026.08.24
+PKG_RELEASE:=1
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_TURBOACC_INCLUDE_NO_FASTPATH \
@@ -16,6 +18,8 @@ PKG_CONFIG_DEPENDS:= \
   CONFIG_PACKAGE_TURBOACC_INCLUDE_FULLCONE
 
 PKG_LICENSE:=GPL-3.0-only
+PKG_MAINTAINER:=lvzscn
+PKG_URL:=https://github.com/lvzscn/turboacc
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 LUCI_TITLE:=LuCI support for FastPath (FW3 or FW4)
