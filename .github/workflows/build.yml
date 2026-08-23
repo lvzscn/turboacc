@@ -19,7 +19,7 @@ jobs:
             rsync \
             unzip \
             wget \
-            python3
+            python3 \
             zstd
 
       - name: Download ImmortalWrt SDK
@@ -62,6 +62,7 @@ jobs:
       - name: Compile turboacc
         working-directory: sdk
         run: |
+          make package/luci-apps/luci-app-turboacc/clean
           make package/luci-apps/luci-app-turboacc/compile V=s
 
       - name: Upload APK
